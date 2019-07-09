@@ -4,17 +4,35 @@
 
  CansatGPS<CansatHwSerial> cansatGPS(_GPSport);
 
-
+bool gps_searching=true;
 void setupGPS() {
   // put your setup code here, to run once:
   cansatGPS.begin(9600);
 
 }
+
+void reconnectGPS(){
+  cansatGPS.begin(9600);
+  cansatGPS.rx_empty();
+}
+
+void gpsSearchingCheck(){
+#ifdef PROCESSING
+      Serial.print("%,4,1,");  // header,class,num data
+      Serial.println(gps_searching);
+#endif  
+}
+
 #define PROCESSING
 void updateGPS() {
   // put your main code here, to run repeatedly:
-  
+  if(cansatGPS.gps_data_comming){
+    cansatGPS.gps_data_comming=false;
+    isGpsDataNew=true;
+  }
   if(cansatGPS.read()){ 
+      gps_searching=false;
+      
       LED1toggle();
      
 #ifdef SERIAL_MONITOR    

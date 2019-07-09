@@ -15,6 +15,11 @@ void setupAHRS(){
     flying_status=READY_S;
 
 }
+void reconnectAhrs(){
+  cansatIMU.begin(115200);
+  cansatIMU.rx_empty();    
+}
+
 #define PROCESSING
 void updateAHRS(){
 

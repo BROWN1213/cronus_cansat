@@ -23,22 +23,22 @@ void checkBattery(){
   if( v_length<V_NBUF )v_length++;
 
  //calculate average v_value
- v_sum=0;
- for(int i=0;i<V_NBUF;i++) v_sum += v_buf[i];
- float avg_v=v_sum/float(v_length);
+  v_sum=0;
+  for(int i=0;i<V_NBUF;i++) v_sum += v_buf[i];
+  float avg_v=v_sum/float(v_length);
  
  // classify v_level
- if(avg_v>L4){
-  v_level=4;
- }else if(avg_v>L3){
-  v_level=3;
- }else if(avg_v>L2){
-  v_level=2;
- }else if(avg_v>L1){
-  v_level=1;
- }else{
-  v_level=0;
- }
+   if(avg_v>L4){
+    v_level=4;
+   }else if(avg_v>L3){
+    v_level=3;
+   }else if(avg_v>L2){
+    v_level=2;
+   }else if(avg_v>L1){
+    v_level=1;
+   }else{
+    v_level=0;
+   }
 
   
   
@@ -48,8 +48,8 @@ void checkBattery(){
 #endif
 
 #ifdef PROCESSING
-      Serial.print("%,3,1,");  // header,class,num data
-      Serial.println(v_level);
+  Serial.print("%,3,1,");  // header,class,num data
+  Serial.println(v_level);
 
 #endif  
 }
