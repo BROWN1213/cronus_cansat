@@ -1,4 +1,4 @@
-#include "src/cansat_system.h"
+#include "src/cansat_system.h" //Cansat System Header File
 #include<SimpleTimer.h>   //Task scheduler 
 
 #define TIME_MARGIN 700  //700ms
