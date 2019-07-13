@@ -9,7 +9,7 @@
 static CansatHwSerial _IMUport(Serial1);
 
 CansatIMU<CansatHwSerial> cansatIMU(_IMUport);
-int flying_status;  // 0:ready 1 : launching, 2: freefall, 3:parafoil   4: landing
+int flying_status;  // 0: ready, 1: launching, 2: freefall, 3: parafoil, 4: landing
 void setupAHRS(){
     cansatIMU.begin(115200);
     flying_status=READY_S;

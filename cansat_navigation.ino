@@ -17,8 +17,8 @@ void winchCallback(){
 }
 
 void setNavigationMode(bool mode){
-    //mode 0 :audo
-    //mode 1 : manual
+    //mode 0 :auto
+    //mode 1 :manual
     cansatNavigation.setNavigationMode(mode);
 
 }

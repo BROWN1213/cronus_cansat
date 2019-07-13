@@ -75,7 +75,7 @@ void OnFlyMode(){
   
   int trigger;
   trigger = cmdMessenger.readInt16Arg();
-  if(trigger==0){ //automode
+  if(trigger==0){ //auto mode
     if(!getNavigationMode()){
        Serial.println(F("Navigation already automode ")); 
     }else{
@@ -111,4 +111,3 @@ void OnManualControl(){
   Serial.println((float)trigger*(float)89.); 
   
 }
-

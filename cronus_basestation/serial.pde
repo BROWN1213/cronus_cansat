@@ -21,7 +21,7 @@ void customize(DropdownList ddl) {
   // a convenience function to customize a DropdownList
   PFont pfont = createFont("Arial",20,true); // use true/false for smooth/no-smooth
   ControlFont font = new ControlFont(pfont,12);
-  ddl.setFont(font);
+  //ddl.setFont(font);
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(15);
   ddl.setBarHeight(17);
