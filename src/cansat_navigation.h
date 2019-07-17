@@ -20,7 +20,7 @@ class CansatNavigation
 {
   public:
     CansatNavigation();
-    void begin(int pin,void (*winchCallback)());
+    void begin(int pin,void (*winchCallback)(),int offset);
     void updateNavigationParamers(float dist,float bearing, float course,float d_alt);
     void updateControlAngle();
     void printNavigationInfo();
@@ -40,6 +40,7 @@ class CansatNavigation
     float _control_angle;
     float _diff_altitude;
     uint32_t _winch_angle;
+    int _winch_angle_offset;
     bool _mode;  // false: automode, true: manual mode
 
     int _winch_servo_pin;

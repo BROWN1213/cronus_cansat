@@ -55,7 +55,8 @@ CansatGPS_NMEA::CansatGPS_NMEA(GPS_State &_state) :
     _term_number(0),
     _term_offset(0),
     _gps_data_good(false),
-    state(_state)
+    state(_state),
+    gps_data_comming(false)
 {
     // this guarantees that _term is always nul terminated
     memset(_term, 0, sizeof(_term));
@@ -213,6 +214,7 @@ uint32_t CansatGPS_NMEA::_parse_degrees()
  */
 bool CansatGPS_NMEA::_have_new_message()
 {
+
     if (_last_RMC_ms == 0 ||
         _last_GGA_ms == 0) {
         return false;
@@ -222,6 +224,7 @@ bool CansatGPS_NMEA::_have_new_message()
         now - _last_GGA_ms > 150) {
         return false;
     }
+        
     if (_last_VTG_ms != 0 &&
         now - _last_VTG_ms > 150) {
         return false;
@@ -239,6 +242,7 @@ bool CansatGPS_NMEA::_have_new_message()
 // Returns true if new sentence has just passed checksum test and is validated
 bool CansatGPS_NMEA::_term_complete()
 {
+    
     // handle the last term in a message
     if (_is_checksum_term) {
         uint8_t checksum = 16 * _from_hex(_term[0]) + _from_hex(_term[1]);
@@ -341,6 +345,9 @@ bool CansatGPS_NMEA::_term_complete()
             // VTG may not contain a data qualifier, presume the solution is good
             // unless it tells us otherwise.
             _gps_data_good = true;
+
+        } else if (strcmp(term_type, "GSV") == 0) {
+           gps_data_comming =true;
         } else {
             _sentence_type = _GPS_SENTENCE_OTHER;
         }
@@ -401,6 +408,7 @@ bool CansatGPS_NMEA::_term_complete()
             break;
         case _GPS_SENTENCE_GGA + 9: // Altitude (GPGGA)
             _new_altitude = _parse_decimal_100(_term);
+            
             break;
 
         // course and speed

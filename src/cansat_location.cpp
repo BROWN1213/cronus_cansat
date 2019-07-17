@@ -35,6 +35,7 @@
 
 
 #include "cansat_location.h"
+#include "cansat_debug.h"
 
 #define     PI 3.14159265358979
 
@@ -49,16 +50,16 @@ CansatLocation::CansatLocation(){
 
   distance=0;
   bearing_angle=0;
-  dest_lat=0;
-  dest_lon=0;
-  dest_bearing=0;
+  estimated_lat=0;
+  estimated_lon=0;
+  estimated_bearing=0;
   _destination_coord.lat=0;
   _destination_coord.lng=0;
   _destination_coord.alt=0;
   _current_coord.alt=0;
   _current_coord.lat=0;
   _current_coord.lng=0;
-
+  destination_locked=false;
 }
 
 
@@ -95,6 +96,11 @@ bool CansatLocation::cal_distance_bearing(){
   float cosSqAlpha,cos2SigmaM,sinSigma,sinLambda,cosLambda,cosSigma,sigma ;
 
   float lambda = L, lambdaP, iterLimit = 100;
+
+  if(!destination_locked){
+    CANSAT_LOG("destination NULL")
+    return false;
+  }
   do {
     sinLambda = sin(lambda);
     cosLambda = cos(lambda);
@@ -208,13 +214,13 @@ void CansatLocation::cal_destination(float point1[],float bearing, float dist){
 
   // final bearing
    //dest[2] = atan2(sinAlpha, -tmp);
-   dest_bearing = atan2(sinAlpha, -tmp);
+   estimated_bearing = atan2(sinAlpha, -tmp);
 
   // algorithm convention uses Deg outputs
   //dest[0] = radiansToDegrees(lat2) ;
-  dest_lat = radiansToDegrees(lat2) ;
+  estimated_lat = radiansToDegrees(lat2) ;
   //dest[1] = lon1+(radiansToDegrees(L));
-  dest_lon = lon1+(radiansToDegrees(L));
+  estimated_lon = lon1+(radiansToDegrees(L));
 }
 
 
@@ -238,6 +244,7 @@ void CansatLocation::setDestination(float lat, float lng, float alt)
   _destination_coord.alt=alt;
   _destination_coord.lat=lat;
   _destination_coord.lng=lng;
+  destination_locked=true;
 }
 GpsCoordinates CansatLocation::getDestination()
 {
@@ -270,4 +277,9 @@ bool CansatLocation::testVincenty()
   if( (abs(distance-8862.51)<0.01) ){
     return true;
   }
+}
+
+float CansatLocation::getGroundAltitude(){
+
+  return(_current_coord.lat-_destination_coord.alt);
 }
