@@ -17,6 +17,7 @@ CansatStatus cansatStatus;
 // the timer scheduler object
 SimpleTimer schedule_timer;
 int heartbeat_timer_id;
+int PM2_5_timer_id;
 bool isGps_data_fix=false;  // Means gps data is valid
 void setup() {
   CansatSystemInit();   
@@ -30,8 +31,10 @@ void setup() {
   //setupCamera();
   setupLocation();
   setupNavigation(1);// set manual mode 1 , auto 0
-
-  heartbeat_timer_id=schedule_timer.setInterval(1000, heartbeat); //1Hz  
+  setupPM2_5();
+  heartbeat_timer_id=schedule_timer.setInterval(1000, heartbeat); //1Hz
+  
+  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5); 
   setupCmdMessenger();
 }
 
