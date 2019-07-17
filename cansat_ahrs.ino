@@ -50,6 +50,5 @@ bool detectFlyingStatus(){
 }
 
 float calMotionAcceleration(){
-
   return 1;  //pow( (x*x+y*y+z*z),0.5)
 }
