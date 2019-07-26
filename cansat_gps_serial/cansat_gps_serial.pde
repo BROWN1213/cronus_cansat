@@ -183,7 +183,7 @@ void loadMap(){
   
   //pushMatrix();
   //translate(2.7*width/5, 0.8*height/5);
-  String token = "pk.eyJ1IjoiY2NoYW1jaGkiLCJhIjoiY2plNDM0ZW8xMXo3NTJ3anI5NW81Y2xxZyJ9.QLsDM8E8nyuK2GMfGuUFDw";
+  String token = "";
   //String longitude = "127.1144943 ";
   //String latitude = "37.384931";
   String longitude = "127.006744";
