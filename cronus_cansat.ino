@@ -1,4 +1,3 @@
-
 #include "src/cansat_system.h"
 #include<SimpleTimer.h>   //Task scheduler 
 
@@ -64,9 +63,10 @@ void loop() {
     reconnectAhrs();
     while((millis()-loop_start_time)<TIME_MARGIN ){
       updateAHRS();
-      
+      updateturnaround();
       timerRun();
       cmdMessengerRun();
+      
     }
 
 
