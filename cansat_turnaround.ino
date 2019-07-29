@@ -51,4 +51,4 @@ float averageVelocityFall(float current_altitude){
     for(int i=0;i<MA_NBUF_V;i++) v_sum += velocity_fall_Buf[i];
     float avg_v=v_sum/float(MA_NBUF_V);
     return avg_v;
-  }
+}
