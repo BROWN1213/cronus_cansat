@@ -48,9 +48,8 @@ void checkBattery(){
 #endif
 
 #ifdef PROCESSING
-  Serial.print("%,3,2,");  // header,class,num data
-  Serial.print(v_level);Serial.print(',');
-  Serial.println(!isAutoMode());
+  Serial.print("%,3,1,");  // header,class,num data
+  Serial.println(v_level);
 
 #endif  
 }

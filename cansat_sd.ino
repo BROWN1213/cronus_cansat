@@ -29,7 +29,12 @@ void setupSD(){
     cansatSD.setFileName(cansatGPS.date(),cansatGPS.time());
     if(!(cansatSD.saveLabel(LOG_LABEL)&cansatSD.saveLabelImu(IMU_LABEL))){
         Serial.println(F("!!SD problem"));
-        LEDBlinkAll(2000);
+        while(1){
+            LEDOn(LED0);LEDOn(LED1);LEDOff(LED2);LEDOff(LED3);
+            delay(1000);
+            LEDOff(LED0);LEDOff(LED1);LEDOn(LED2);LEDOn(LED3);
+            delay(1000);
+        }
     }    
 }
 
@@ -42,7 +47,7 @@ bool saveGpsControlData(){
   log_datas.date=cansatGPS.date();
   log_datas.time=cansatGPS.time();
   log_datas.time_index=log_time_index++;
-  log_datas.mode=isAutoMode();
+  log_datas.mode=getNavigationMode();
   log_datas.latitude=gpsLocation.lat;
   log_datas.longitude=gpsLocation.lng;
   log_datas.altitude=gpsLocation.alt;

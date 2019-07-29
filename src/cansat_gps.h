@@ -44,10 +44,9 @@ class CansatGPS
         this->stream.RxModePortSet(RxMode_GPS_PORT);
        
         numc = this->stream.available();
-        
+        if(numc>0)gps_data_comming=true; //gps_data_comming will be cleared outer function
         while (numc--) {
             this->stream.read(&c,1); //read 1 Byte
-
             //Serial.write(c);  // debuging
             if (decode(c)) {
                 parsed = true;
@@ -64,13 +63,7 @@ class CansatGPS
          }
      }
      int connected() { return this->conn && this->stream; }
-     int available() { 
-         if(gps_data_comming){
-            gps_data_comming=false;
-            return true;
-         }
-         return false;
-      }
+     int available() { return this->stream.available(); }
      // ground speed in m/s
      float ground_speed_ms() const {
          return state.ground_speed;
@@ -110,7 +103,7 @@ class CansatGPS
      uint32_t date() const {
          return state.date;
      }
-     
+     bool gps_data_comming=false;
    private:
      GPS_State state;
      // Note allowance for an additional instance to contain blended data

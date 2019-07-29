@@ -1,34 +1,13 @@
 #include "src/cansat_navigation.h"
 #include "src/cansat_Debug.h"
+
 CansatNavigation cansatNavigation;
 
-void setupNavigation(bool mode){
-  int offset_angle=-6;
-  cansatNavigation.begin(D0,winchCallback,offset_angle);
-  setNavigationMode(mode);
-  cansatNavigation.winchNeutral();
-  Serial.println(F("Navigation begin"));
+void setupNavigation(){
+    cansatNavigation.begin(D0,winchCallback);
+
 }
 
-void updateNavigation(){
-  float gournd_alt=cansatLocation.getGroundAltitude();
-  //update navigation parameters
-  if(destination_locked){
-    cansatNavigation.updateNavigationParamers(location_distance,location_bearing,cansatGPS.ground_course(),gournd_alt);
-    //update control angle
-    cansatNavigation.updateControlAngle();
-  
-    // turn winch
-    if(isAutoMode()&& (cansatGPS.status()>=2)){ //GPS_FIX_TYPE_2D_FIX
-      cansatNavigation.winchControl(0); // ignore angle when auto mode
-    }
-    //send info to base station
-    Serial.print("%,6,2,");  // header,class,num data
-    Serial.print(cansatNavigation.getControlAngle());Serial.print(',');
-    Serial.println(gournd_alt); 
-
-  }
-}
 void timerRun(){
   cansatNavigation.timerRun();
   
@@ -39,14 +18,14 @@ void winchCallback(){
 }
 
 void setNavigationMode(bool mode){
-    //mode 0 :audo
-    //mode 1 : manual
+    //mode 0 :auto
+    //mode 1 :manual
     cansatNavigation.setNavigationMode(mode);
 
 }
 
-bool isAutoMode(){
-    return !(cansatNavigation.getNavigationMode());
+bool getNavigationMode(){
+    return cansatNavigation.getNavigationMode();
 }
 
 void winchControl(float angle){

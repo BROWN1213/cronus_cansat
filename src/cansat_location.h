@@ -21,12 +21,11 @@ class CansatLocation{
     GpsCoordinates getDestination();
     void updateCurrentCoord(float lat, float lng, float alt);
     bool testVincenty();
-    float getGroundAltitude();
+
 
     float distance;
     float bearing_angle;
-    float estimated_lat,estimated_lon,estimated_bearing;
-    bool destination_locked;
+    float dest_lat,dest_lon,dest_bearing;
 
     private:
     GpsCoordinates _destination_coord;

@@ -145,7 +145,6 @@ public:
     ///					an update to the GPS state
     ///
     bool                        decode(char c);
-    bool gps_data_comming=false;
 private:
     /// Coding for the GPS sentences that the parser handles
     enum _sentence_types {      //there are some more than 10 fields in some sentences , thus we have to increase these value.
