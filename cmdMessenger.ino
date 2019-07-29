@@ -12,6 +12,7 @@ enum
   
 };
 
+
 void attachCommandCallbacks()
 {
   // Attach callback methods
@@ -21,6 +22,16 @@ void attachCommandCallbacks()
   cmdMessenger.attach(kFlyMode, OnFlyMode); 
   cmdMessenger.attach(kManualControl, OnManualControl);
   
+}
+void cmdMessengerRun(){
+  cmdMessenger.feedinSerialData();
+}
+
+void setupCmdMessenger(){
+  //setup Command Messenger 
+  attachCommandCallbacks();
+  Serial.println(F("CmdMessenger begin"));
+  cmdMessenger.printLfCr();  
 }
 
 // Called when a received command has no attached function
@@ -33,41 +44,27 @@ void OnUnknownCommand()
 // Callback function that sets falling
 void OnFalling()
 {
-  // Read led state argument, interpret string as boolean
-  int trigger;
-  trigger = cmdMessenger.readInt16Arg();
-  if(trigger==1){
-    cmdMessenger.sendCmd(kAcknowledge,F("Hooking position"));
-    //tskFreeFall.hookingPosition();
-  }
-  if(trigger==2){
-    cmdMessenger.sendCmd(kAcknowledge,F("free falling"));
-    //tskFreeFall.releasePosition();
-  }
-  if(trigger==0){
-    cmdMessenger.sendCmd(kAcknowledge,F("ready position"));
-    //tskFreeFall.readyPosition();
-  }  
+ 
 }
 
 void OnHomePosition(){
 
-  if(cansatGPS.num_sats()>=6){  
-    float lat,lng,alt;
-    lat=cansatGPS.location().lat;
-    lng=cansatGPS.location().lng;
-    alt=cansatGPS.location().alt;
-    cansatLocation.setDestination(lat,lng,alt);
-    cmdMessenger.sendCmd(kAcknowledge,F("Home Position updated"));
-    cansatBT.send(F("lat:lng:alt= "));
-    cansatBT.send(lat);
-    cansatBT.send(lng);
-    cansatBT.sendln(alt);
-  }else{
-    cmdMessenger.sendCmd(kAcknowledge,F("Home Position Fail"));
-    Serial.println(F("We need at least 6 satellites ")); 
-    
-  }
+  GpsCoordinates dest;
+//  There is some floating error
+//  send:372875280,1270626890,40
+//  receive :37.2875289,127.0626831,40.00 >> within 3m
+  dest.lat=cmdMessenger.readFloatArg();
+  dest.lng=cmdMessenger.readFloatArg();
+  dest.alt=cmdMessenger.readFloatArg();
+  setDestinationLocation(dest.lat,dest.lng,dest.alt);
+  dest=cansatLocation.getDestination();
+  Serial.print(dest.lat,7);Serial.print(",");Serial.print(dest.lng,7);Serial.print(",");
+  Serial.println(dest.alt);
+
+
+  cmdMessenger.sendCmd(kAcknowledge,F("Home Position updated"));
+
+
 }
 
 void OnFlyMode(){
@@ -75,9 +72,9 @@ void OnFlyMode(){
   
   int trigger;
   trigger = cmdMessenger.readInt16Arg();
-  if(trigger==0){ //auto mode
-    if(!getNavigationMode()){
-       Serial.println(F("Navigation already automode ")); 
+  if(trigger==0){ //automode
+    if(isAutoMode()){
+       Serial.println(F("Navigation already automode")); 
     }else{
        setNavigationMode(0);
     }    
@@ -85,8 +82,8 @@ void OnFlyMode(){
 
   }
   if(trigger==1){ //manual mode
-    if(getNavigationMode()){
-       Serial.println(F("Navigation already manualmode ")); 
+    if(!isAutoMode()){
+       Serial.println(F("Navigation already manualmode")); 
     }else{
        setNavigationMode(1);
     }    
@@ -99,7 +96,7 @@ void OnManualControl(){
   // Read led state argument, 
   float trigger;
   
-  if(!getNavigationMode()){
+  if(isAutoMode()){
     cmdMessenger.sendCmd(kAcknowledge,F("Control fail..Set manualmode first!!!")); 
     return;  
   }

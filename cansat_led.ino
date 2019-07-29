@@ -6,7 +6,21 @@ void setupLED(){
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
+  LEDbooting();
+}
 
+void LEDbooting(){
+  LEDOffAll();
+  LEDOn(LED0);
+  delay(200);
+  LEDOn(LED1);
+  delay(200);
+  LEDOn(LED2);
+  delay(200);  
+  LEDOn(LED3);
+  delay(200);  
+  LEDOffAll();
+    
 }
 
 bool led0onoff;

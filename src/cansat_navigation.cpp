@@ -11,7 +11,7 @@
 #include "cansat_navigation.h"
 #include "cansat_Debug.h"
 
-#define MILLPER1T 1560.*2.2 //1.56sec per 1 turn. 2.0 is tuning value
+#define MILLPER1T 1560.*1.5 //1.56sec per 1 turn. 1.5 is tuning value 1.5 PSCS
 #define MAXTURN 3.
 #define CONTROLL_MAX 0.75 // 180deg to 0.75 turn
 #define WINCHMAX_CALLBACKTIME MILLPER1T*CONTROLL_MAX
@@ -19,23 +19,24 @@
 
 #define WINCH_MIN (uint16_t)(1500.- (600./MAXTURN*CONTROLL_MAX) ) //0.75 turn to 1650
 #define WINCH_MAX (uint16_t)(1500.+ (600./MAXTURN*CONTROLL_MAX) )  //-0.75 turn to 1350
-#define WINCH_CALLBACK_TIME(angle) (uint16_t)(WINCHMAX_CALLBACKTIME*fabs(angle)/180.)+500
+#define WINCH_CALLBACK_TIME(angle) (uint16_t)(WINCHMAX_CALLBACKTIME*fabs(angle)/180.)
 
 CansatNavigation::CansatNavigation()
 {
 
 }
-void CansatNavigation::begin(int pin,void (*winchCallback)())
+void CansatNavigation::begin(int pin,void (*winchCallback)(),int offset)
 {
     _mode=true; //set to manual mode
-
+    _winch_angle_offset=offset;
     _winch_servo_pin=pin;
     pinMode(pin, OUTPUT);
     _winch_servo.attach(pin);
     _control_angle=0; //
-    winchControl(0);
+    winchNeutral();
     _pCallback=winchCallback;
     _timerId=0;
+
 
 }
 void CansatNavigation::setNavigationMode(bool mode)
@@ -79,7 +80,7 @@ void CansatNavigation::winchControl(float angle)
 {
   uint16_t winch_neutal_time;
   if(!_mode){  // auto mode
-    turnWinch( angleToMicrosec(_control_angle) );
+    turnWinch( angleToMicrosec(_control_angle-_winch_angle_offset) );
     if(fabs(angle)>MIN_CALLBACK_ANGLE){
       winch_neutal_time=WINCH_CALLBACK_TIME(angle); 
       if(_winchTimer.getNumTimers()>0)_winchTimer.deleteTimer(_timerId);
@@ -88,7 +89,7 @@ void CansatNavigation::winchControl(float angle)
     CANSAT_LOG("Turn winch(auto):");
     CANSAT_LOG1(_control_angle);
   }else{ //manual mode
-    turnWinch( angleToMicrosec(angle) );
+    turnWinch( angleToMicrosec(angle-_winch_angle_offset) );
     if(fabs(angle)>MIN_CALLBACK_ANGLE){
       winch_neutal_time=WINCH_CALLBACK_TIME(angle); 
       //Serial.print("callback time=");
@@ -101,7 +102,7 @@ void CansatNavigation::winchControl(float angle)
   }
 }
 void CansatNavigation::winchNeutral(){
-  turnWinch( angleToMicrosec(0) );
+  turnWinch( angleToMicrosec(0-_winch_angle_offset) );
 
 }
 float CansatNavigation::getControlAngle()
@@ -136,13 +137,16 @@ uint16_t CansatNavigation::angleToMicrosec(float angle)
 {
   uint16_t angle_micro;  //900~2100
   //the angle is -179~180
-  if(angle==180)angle=179;
+
   angle=0-angle;
-  if(angle< -179 || angle>180){
-    CANSAT_LOG("Wrong winch angle");
+  if(angle<= -179 || angle>=180){
+    CANSAT_LOG("limit winch angle");
     Serial.println(angle);
-    return;
+    if(angle>=180)angle=180;
+    if(angle<=-179)angle=-179;
+    //return;
   }
+
   //angle_micro=(uint16_t)map(angle,-179,180,900,2100); //max 3 turn too much turn
   //angle_micro=(uint16_t)map(angle,-179,180,1100,1900);  // max 2 turn
   //angle_micro=(uint16_t)map(angle,-179,180,1200,1800);  // max 1.5 turn

@@ -15,7 +15,7 @@ CansatCircling::CansatCircling()
 
 }
 
-void CansatCircling::updatedis(float cansatdistance)
+void CansatCircling::updateDis(float cansatdistance)
 {
     distance=cansatdistance;
     return;

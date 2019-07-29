@@ -17,7 +17,7 @@ class CansatCircling
 {
   public:
     CansatCircling();
-    void updatedis(float cansatdistance);
+    void updateDis(float cansatdistance);
     void updateVair(float cansatspeed);
     void updateVfall(float beforeAlt, float afterAlt);
    
