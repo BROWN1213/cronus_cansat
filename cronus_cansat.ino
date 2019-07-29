@@ -3,8 +3,6 @@
 
 #define TIME_MARGIN 700  //700ms
 
-unsigned long cirPreviousMillis = 0; 
-const long delayTime = 1000;
 
 // the timer scheduler object
 SimpleTimer schedule_timer;
@@ -42,16 +40,9 @@ void loop() {
       updateAHRS();
       schedule_timer.run();
     }
+    updatecircling();
   }//if(isGpsDataNew)
-
-  unsigned long cirCurrentMillis = millis();
-  if(cirCurrentMillis - cirPreviousMillis >= delayTime){
-    cirPreviousMillis = cirCurrentMillis;
-
-    //updatecircling();
-  }
-
-  
+ 
   schedule_timer.run();
   //testWinch();
 }
