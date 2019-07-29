@@ -15,19 +15,19 @@ CansatCircling::CansatCircling()
 
 }
 
-float CansatCircling::updatedis(float cansatdistance)
+void CansatCircling::updatedis(float cansatdistance)
 {
     distance=cansatdistance;
-    return distance;
+    return;
 
 
 }
-float CansatCircling::updateVair(float cansatspeed){
+void CansatCircling::updateVair(float cansatspeed){
     Vair=cansatspeed;
-    return Vair;
+    return;
 }
-float CansatCircling::updateVfall(float beforeAlt, float afterAlt){
+void CansatCircling::updateVfall(float beforeAlt, float afterAlt){
     Vfall=beforeAlt-afterAlt;
-    return Vfall;
+    return;
 }
 

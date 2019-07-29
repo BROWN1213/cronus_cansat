@@ -17,16 +17,16 @@ class CansatCircling
 {
   public:
     CansatCircling();
-    float updatedis(float cansatdistance);
-    float updateVair(float cansatspeed);
-    float updateVfall(float beforeAlt, float afterAlt);
+    void updatedis(float cansatdistance);
+    void updateVair(float cansatspeed);
+    void updateVfall(float beforeAlt, float afterAlt);
+   
+  private:
     float distance;
     float Vfall; //1초전 높이-현재 낙하거리
     float height;  //현재 높이-지면 높이
     float Vair;
-    float ELP;   
-  private:
-
+    float ELP;
 };
 
 
