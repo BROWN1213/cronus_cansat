@@ -17,6 +17,8 @@ CansatStatus cansatStatus;
 SimpleTimer schedule_timer;
 int heartbeat_timer_id;
 int PM2_5_timer_id;
+int Turnaround_timer_id;
+float turnaround_time=1;
 bool isGps_data_fix=false;  // Means gps data is valid
 void setup() {
   CansatSystemInit();   
@@ -32,7 +34,8 @@ void setup() {
   setupNavigation(1);// set manual mode 1 , auto 0
   setupPM2_5();
   heartbeat_timer_id=schedule_timer.setInterval(1000, heartbeat); //1Hz
-  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5); 
+  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5);
+  //Turnaround_timer_id=schedule_timer.setInterval(turnaround_time*1000, updateturnaround);    //1초마다 돌다가 한번 돌면(toggle=true)가 되면 더 이상 돌지 않음
   setupCmdMessenger();
 }
 
@@ -63,7 +66,6 @@ void loop() {
     reconnectAhrs();
     while((millis()-loop_start_time)<TIME_MARGIN ){
       updateAHRS();
-      updateturnaround();
       timerRun();
       cmdMessengerRun();
       
