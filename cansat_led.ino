@@ -1,5 +1,3 @@
-
-
 void setupLED(){
   // initialize digital pin LEDs as an output.
   pinMode(LED0, OUTPUT);
@@ -33,6 +31,7 @@ void LED0toggle(){
     led0onoff=true;
   }
 }
+
 bool led1onoff;
 void LED1toggle(){
   if(led1onoff){

@@ -9,9 +9,8 @@ enum
   kHomePosition, //3
   kFlyMode, //4
   kManualControl, //5
-  
+  kTurnAround, //6
 };
-
 
 void attachCommandCallbacks()
 {
@@ -21,7 +20,7 @@ void attachCommandCallbacks()
   cmdMessenger.attach(kHomePosition, OnHomePosition);
   cmdMessenger.attach(kFlyMode, OnFlyMode); 
   cmdMessenger.attach(kManualControl, OnManualControl);
-  
+  cmdMessenger.attach(kTurnAround,OnTurnAround);  
 }
 void cmdMessengerRun(){
   cmdMessenger.feedinSerialData();
@@ -107,4 +106,11 @@ void OnManualControl(){
   Serial.print("Control angle="); 
   Serial.println((float)trigger*(float)89.); 
   
+}
+void OnTurnAround(){
+  if(cmdMessenger.readInt16Arg()==1){ 
+    if(turnaround_toggle){
+      turnaround_button=true;      
+    } 
+  }
 }

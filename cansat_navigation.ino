@@ -1,7 +1,10 @@
 #include "src/cansat_navigation.h"
 #include "src/cansat_Debug.h"
+
 CansatNavigation cansatNavigation;
+
 float ground_alt;
+
 void setupNavigation(bool mode){
   int offset_angle=-6;
   cansatNavigation.begin(D0,winchCallback,offset_angle);

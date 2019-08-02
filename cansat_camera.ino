@@ -1,6 +1,7 @@
 /*
 #include "src/cansat_vc0703.h"
 #include "src/PacketSerial.h"
+
 VC0703 cansatCAM(&Serial1);
 
 PacketSerial myPacketSerial;

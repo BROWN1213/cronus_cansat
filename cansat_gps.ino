@@ -1,10 +1,11 @@
 #include "src/cansat_gps.h"
 
- static CansatHwSerial _GPSport(Serial1);
+static CansatHwSerial _GPSport(Serial1);
 
- CansatGPS<CansatHwSerial> cansatGPS(_GPSport);
+CansatGPS<CansatHwSerial> cansatGPS(_GPSport);
 
 bool gps_searching=true;
+
 void setupGPS() {
   // put your setup code here, to run once:
   cansatGPS.begin(9600);
@@ -21,6 +22,7 @@ bool isGpsLocked(){
 
   return (cansatGPS.status() >= 2) ? true : false;
 }
+
 void gpsSearchingCheck(){
       Serial.print("%,4,1,");  // header,class,num data
       Serial.println(cansatGPS.status());  
@@ -35,7 +37,6 @@ void updateGPS() {
   // put your main code here, to run repeatedly:
 
   if(cansatGPS.read()){ 
-
    
       gps_searching=false;
       isGps_data_fix=true;
@@ -52,7 +53,7 @@ void updateGPS() {
        Serial.print("lon=");
        Serial.println((cansatGPS.location().lng* 1.0e-7f),7);       
        Serial.print("altitude(m)=");
-       Serial.println(cansatGPS.location().alt/100.); 
+       Serial.println(cansatGPS.location().alt/1000.); 
        Serial.print("num_sat=");
        Serial.println(cansatGPS.num_sats()); 
        Serial.print("speed(km/s)=");
@@ -60,18 +61,18 @@ void updateGPS() {
        Serial.print("cource=");
        Serial.println(cansatGPS.ground_course());
        Serial.println("*********************************");    
- #endif
+#endif
+
 #ifdef PROCESSING
       Serial.print("%,2,6,");  // header,class,num data
       Serial.print((cansatGPS.location().lat* 1.0e-7f),7);Serial.print(',');
       Serial.print((cansatGPS.location().lng* 1.0e-7f),7);Serial.print(',');
-      Serial.print(cansatGPS.location().alt/100.);Serial.print(',');
+      Serial.print(cansatGPS.location().alt/1000.);Serial.print(',');
       Serial.print(cansatGPS.num_sats());Serial.print(',');
       Serial.print(cansatGPS.ground_speed_ms());Serial.print(',');
       Serial.println(cansatGPS.ground_course());
       
-#endif
-  
+#endif 
   }
 
 }

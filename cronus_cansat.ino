@@ -57,7 +57,7 @@ void loop() {
     loop_start_time=millis(); 
     if(isGpsLocked()){
       isGps_data_fix=false;
-       if(updateLocation()){
+      if(updateLocation()){
         updateNavigation();
       }     
     }

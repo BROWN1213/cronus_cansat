@@ -4,7 +4,6 @@ CansatSD cansatSD;
 uint32_t log_time_index;
 ImuPacket array_imu_datas[10];
 
-
 //void appendImuData(ImuPacket* array_imu_datas,uint16_t offset){
 //  ImuPacket imu_datas; 
 //

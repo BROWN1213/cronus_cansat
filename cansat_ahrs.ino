@@ -1,10 +1,6 @@
 #include "src/cansat_imu.h"
 
-
-
 static CansatHwSerial _IMUport(Serial1);
-
-
 
 CansatIMU<CansatHwSerial> cansatIMU(_IMUport);
   

@@ -21,16 +21,17 @@ bool turnaround_toggle=false;
 bool turnaround_button=false;
 int cnt111=0;
 void updateturnaround(){
-  if(isGpsLocked()){
-    distance=cansatLocation.distance;                 
-    //distance=180;
+  /*
+     * distance=cansatLocation.distance;                 
     velocity_air=cansatGPS.ground_speed_ms();
-    //velocity_air=10;
-    current_altitude=cansatGPS.location().alt/100.;
+    current_altitude=cansatGPS.location().alt/1000.;
     velocity_fall=averageVelocityFall(current_altitude);  //average
-    //velocity_fall=2;
     height=cansatLocation.getGroundAltitude();
-    //height=40;
+    */
+    height=40;
+    distance=180;
+    velocity_air=10;
+    velocity_fall=2;
     time_land=height/velocity_fall;
     estimate_landing_point=time_land*velocity_air;     //ELP Calculate
     distance_delta=estimate_landing_point-distance;    //200-180  ==> 20
@@ -50,13 +51,6 @@ void updateturnaround(){
     Serial.println(distance_delta);
     Serial.print("ground_alt=");
     Serial.println(ground_alt);
-    cnt111++;
-    Serial.print("cnt111=");
-    Serial.println(cnt111);
-    if(cnt111==15){
-      turnaround_button=true;
-    }
-    
     if(distance_delta>THRESHOLD_DISTANCE){
       turn_height=velocity_fall*TURNHEIGHT_PARAMETER;
       threshold_height=HEIGHT_PARAMETER*turn_height;    //threshold height calculate  30
@@ -71,6 +65,14 @@ void updateturnaround(){
           Serial.print("turnaround_time=");
           Serial.println(turnaround_time);
           turnaround_toggle=true;
+          /*
+          cnt111++;
+          Serial.print("cnt111=");
+          Serial.println(cnt111);
+          if(cnt111==10){
+            turnaround_button=true;
+          }
+          */
         }
       }else{
         turnaround_toggle=false;
@@ -78,20 +80,23 @@ void updateturnaround(){
     }else{
       turnaround_toggle=false;
     }
-  }
+  /*if(isGpsLocked()){
+    
+  }*/
 }
 void turnaround(){
-if(isGpsLocked()){
-    if(turnaround_toggle==true){
+  if(turnaround_toggle==true){
       if(turnaround_button==true){
-        //cansatNavigation.winchControlTurnaround(turnaround_angle,turnaround_time);
+        cansatNavigation.winchControlTurnAround(turnaround_angle,turnaround_time*1000); //5000ms = 5s
         Serial.println("Cansat Turn Around!");
         turnaround_toggle=false;
         turnaround_button=false;
         turnaround_count=true;
       }
     }
-  }
+  /*if(isGpsLocked()){
+    
+  }*/
 }
 float getTurnaround_Angle(float distance_delta){
   float Turnaround_angle=map(distance_delta,THRESHOLD_DISTANCE,DISTANCE_PARAMETER*THRESHOLD_DISTANCE,ANGLE_MAX,ANGLE_MIN);  //d delta , 10, 30, 55 ,105
