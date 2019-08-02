@@ -2,6 +2,7 @@
 #include<SimpleTimer.h>   //Task scheduler 
 
 #define TIME_MARGIN 700  //700ms
+
 enum CansatStatus {
   SETUP_COMPLETED = 0,
   READY_FOR_LAUNCH = 1,
@@ -15,17 +16,18 @@ enum CansatStatus {
 CansatStatus cansatStatus;
 // the timer scheduler object
 SimpleTimer schedule_timer;
+
 int heartbeat_timer_id;
 int PM2_5_timer_id;
-int Turnaround_timer_id;
-float turnaround_time=1;
+int UPDATETURN_timer_id;
+int TURNAROUND_timer_id;
 bool isGps_data_fix=false;  // Means gps data is valid
+bool turnaround_count=false;
 void setup() {
   CansatSystemInit();   
   Serial.begin(115200);
   Serial.println("Cansat start");
   setupLED();
- 
   //setupBT(); // actually we don't need a setupBT(), Serial.begin(115200) is enough
   //setupAHRS();
   setupGPS();//DO NOT setup AHRS after GPS, They use serial1
@@ -34,22 +36,22 @@ void setup() {
   setupNavigation(1);// set manual mode 1 , auto 0
   setupPM2_5();
   heartbeat_timer_id=schedule_timer.setInterval(1000, heartbeat); //1Hz
-  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5);
-  //Turnaround_timer_id=schedule_timer.setInterval(turnaround_time*1000, updateturnaround);    //1초마다 돌다가 한번 돌면(toggle=true)가 되면 더 이상 돌지 않음
+  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5);   //5Hz
+  UPDATETURN_timer_id=schedule_timer.setInterval(3000, updateturnaround);   
+  TURNAROUND_timer_id=schedule_timer.setInterval(3000, turnaround);         
   setupCmdMessenger();
 }
 
 void loop() {
 
   uint32_t loop_start_time;
-
+  
   bool loop_sync;
   
   updateGPS(); 
   // choose loop_sync depend on gps status
   // if there is no GPS then use gpsAvailable() for loop_sync
   loop_sync= isGpsLocked() ? isGps_data_fix:gpsAvailable();
-   
   
   if( loop_sync){ //main task every 1sec
     loop_start_time=millis(); 
@@ -59,27 +61,27 @@ void loop() {
         updateNavigation();
       }     
     }
-
     timerRun();
     schedule_timer.run();
     cmdMessengerRun();
     reconnectAhrs();
+    
     while((millis()-loop_start_time)<TIME_MARGIN ){
       updateAHRS();
       timerRun();
       cmdMessengerRun();
-      
     }
-
-
-  reconnectGPS();  
-  }//if(isGpsDataNew)
-
+    
+    reconnectGPS();  
+  }   //if(isGpsDataNew)
+  if(turnaround_count==true){
+    schedule_timer.disable(UPDATETURN_timer_id);
+    schedule_timer.disable(TURNAROUND_timer_id);
+  }
   
   schedule_timer.run();
   timerRun();
   cmdMessengerRun();
-
   cansatStatus =SETUP_COMPLETED;
 }
 

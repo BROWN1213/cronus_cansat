@@ -1,4 +1,4 @@
-#define HEIGHT_PARAMETER 8
+#define HEIGHT_PARAMETER 3
 #define TURNHEIGHT_PARAMETER 5
 #define DISTANCE_PARAMETER 3
 #define MA_NBUF_V 5
@@ -13,80 +13,93 @@ int ma_offset_v=0;
 uint32_t prev_v_fall_time;
 float previous_altitude=0,current_altitude=0;
 float distance,velocity_air,velocity_fall;
-float height,cansat_height,ground_height;
+float height,cansat_height;
 float time_land,estimate_landing_point;
 float distance_delta,threshold_height,turn_height;
-float turnaround_angle;
+float turnaround_angle,turnaround_time;
 bool turnaround_toggle=false;
-
+bool turnaround_button=false;
+int cnt111=0;
 void updateturnaround(){
-  if(turnaround_toggle==false){
-    turnaround_time=1;
-    distance=cansatLocation.distance;
+  if(isGpsLocked()){
+    distance=cansatLocation.distance;                 
+    //distance=180;
     velocity_air=cansatGPS.ground_speed_ms();
+    //velocity_air=10;
     current_altitude=cansatGPS.location().alt/100.;
     velocity_fall=averageVelocityFall(current_altitude);  //average
-    cansat_height=current_altitude;
-    height=cansat_height-ground_height;
+    //velocity_fall=2;
+    height=cansatLocation.getGroundAltitude();
+    //height=40;
     time_land=height/velocity_fall;
     estimate_landing_point=time_land*velocity_air;     //ELP Calculate
-    distance_delta=estimate_landing_point-distance;
-    Serial.print("distance=");
+    distance_delta=estimate_landing_point-distance;    //200-180  ==> 20
+    Serial.print("Distance=");
     Serial.println(distance);
+    Serial.print("velocity_air=");
+    Serial.println(velocity_air);
+    Serial.print("velocity_fall=");
+    Serial.println(velocity_fall);
+    Serial.print("current_altitude=");
+    Serial.println(current_altitude);
     Serial.print("height=");
     Serial.println(height);
-    Serial.print("estimate landing point=");
+    Serial.print("estimate_landing_point=");
     Serial.println(estimate_landing_point);
     Serial.print("distance_delta=");
-    Serial.println(distance_delta);    
-    Serial.println("*********************************");    
-    if(distance_delta>THRESHOLD_DISTANCE&&distance!=0){
+    Serial.println(distance_delta);
+    Serial.print("ground_alt=");
+    Serial.println(ground_alt);
+    cnt111++;
+    Serial.print("cnt111=");
+    Serial.println(cnt111);
+    if(cnt111==15){
+      turnaround_button=true;
+    }
+    
+    if(distance_delta>THRESHOLD_DISTANCE){
       turn_height=velocity_fall*TURNHEIGHT_PARAMETER;
-      threshold_height=HEIGHT_PARAMETER*turn_height;     //threshold height calculate
+      threshold_height=HEIGHT_PARAMETER*turn_height;    //threshold height calculate  30
       Serial.print("threshold_height=");
       Serial.println(threshold_height);
       if(height>threshold_height){
-        turnaround_toggle=true;
         turnaround_angle=getTurnaround_Angle(distance_delta);    //turn around angle calcuete
         turnaround_time=getTurnaround_Time(distance_delta);
-        Serial.print("turnaround_time=");
-        Serial.println(turnaround_time);
+        if(turnaround_angle<DISTANCE_PARAMETER*THRESHOLD_DISTANCE&&THRESHOLD_DISTANCE<turnaround_angle&&turnaround_time<DISTANCE_PARAMETER*THRESHOLD_DISTANCE&&THRESHOLD_DISTANCE<turnaround_time){
+          Serial.print("turnaround_angle=");
+          Serial.println(turnaround_angle);
+          Serial.print("turnaround_time=");
+          Serial.println(turnaround_time);
+          turnaround_toggle=true;
+        }
       }else{
         turnaround_toggle=false;
       }
     }else{
       turnaround_toggle=false;
     }
-  }else{
-    turnaround_toggle=false;
-    //cansatNavigation.winchControlTurnaround(turnaround_angle,turnaround_time);
-    Serial.print("distance=");
-    Serial.println(distance);
-    Serial.print("height=");
-    Serial.println(height);
-    Serial.print("estimate landing point=");
-    Serial.println(estimate_landing_point);
-    Serial.print("distance_delta=");
-    Serial.println(distance_delta);
-    Serial.print("threshold_height=");
-    Serial.println(threshold_height);
-    Serial.print("turnaround_time=");
-    Serial.println(turnaround_time);
-    Serial.print("turnaround_toggle=");
-    Serial.println(turnaround_toggle);
-    Serial.println("Start Turn Around!");
-    Serial.println("*********************************");
-    
   }
 }
-
+void turnaround(){
+if(isGpsLocked()){
+    if(turnaround_toggle==true){
+      if(turnaround_button==true){
+        //cansatNavigation.winchControlTurnaround(turnaround_angle,turnaround_time);
+        Serial.println("Cansat Turn Around!");
+        turnaround_toggle=false;
+        turnaround_button=false;
+        turnaround_count=true;
+      }
+    }
+  }
+}
 float getTurnaround_Angle(float distance_delta){
-  float Turnaround_angle=map(distance_delta,THRESHOLD_DISTANCE,DISTANCE_PARAMETER*THRESHOLD_DISTANCE,ANGLE_MIN,ANGLE_MAX); 
+  float Turnaround_angle=map(distance_delta,THRESHOLD_DISTANCE,DISTANCE_PARAMETER*THRESHOLD_DISTANCE,ANGLE_MAX,ANGLE_MIN);  //d delta , 10, 30, 55 ,105
   return Turnaround_angle;
 }
 
 float getTurnaround_Time(float distance_delta){
-  float Turnaround_time=map(distance_delta,THRESHOLD_DISTANCE,DISTANCE_PARAMETER*THRESHOLD_DISTANCE,TIME_MIN,TIME_MAX);
+  float Turnaround_time=map(distance_delta,THRESHOLD_DISTANCE,DISTANCE_PARAMETER*THRESHOLD_DISTANCE,TIME_MIN,TIME_MAX);       // 10 30 5 10
   return Turnaround_time;
 }
 

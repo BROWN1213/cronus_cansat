@@ -1,7 +1,7 @@
 #include "src/cansat_navigation.h"
 #include "src/cansat_Debug.h"
 CansatNavigation cansatNavigation;
-
+float ground_alt;
 void setupNavigation(bool mode){
   int offset_angle=-6;
   cansatNavigation.begin(D0,winchCallback,offset_angle);
@@ -11,10 +11,10 @@ void setupNavigation(bool mode){
 }
 
 void updateNavigation(){
-  float gournd_alt=cansatLocation.getGroundAltitude();
+  ground_alt=cansatLocation.getGroundAltitude();
   //update navigation parameters
   if(destination_locked){
-    cansatNavigation.updateNavigationParamers(location_distance,location_bearing,cansatGPS.ground_course(),gournd_alt);
+    cansatNavigation.updateNavigationParamers(location_distance,location_bearing,cansatGPS.ground_course(),ground_alt);
     //update control angle
     cansatNavigation.updateControlAngle();
   
@@ -25,8 +25,8 @@ void updateNavigation(){
     //send info to base station
     Serial.print("%,6,2,");  // header,class,num data
     Serial.print(cansatNavigation.getControlAngle());Serial.print(',');
-    Serial.println(gournd_alt); 
-
+    Serial.println(ground_alt); 
+    
   }
 }
 void timerRun(){
