@@ -109,8 +109,8 @@ void OnManualControl(){
 }
 void OnTurnAround(){
   if(cmdMessenger.readInt16Arg()==1){ 
-    if(turnaround_toggle){
-      turnaround_button=true;      
+    if(is_turnaround_started){
+      turnaround_permission=true;      
     } 
   }
 }

@@ -33,16 +33,16 @@ bool updateLocation(){
   if(cansatLocation.cal_distance_bearing()){
     location_distance=cansatLocation.distance;
     location_bearing=cansatLocation.bearing_angle;
-  // decide turn around or autp navigation and calculate wind velocity  
+    //decide turn around or autp navigation and calculate wind velocity  
     //send info to base station
     Serial.print("%,5,2,");  // header,class,num data
     Serial.print(location_distance);Serial.print(',');
     Serial.println(location_bearing);
- 
+    return true; 
   }else{
     Serial.println(F("updateLocation Fail"));
     return false;
   }
 
-  return true; 
+  
 }

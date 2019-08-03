@@ -19,10 +19,8 @@ SimpleTimer schedule_timer;
 
 int heartbeat_timer_id;
 int PM2_5_timer_id;
-int UPDATETURN_timer_id;
-int TURNAROUND_timer_id;
 bool isGps_data_fix=false;  // Means gps data is valid
-bool turnaround_count=false;
+bool is_turnaround_started=false;
 void setup() {
   CansatSystemInit();   
   Serial.begin(115200);
@@ -36,9 +34,7 @@ void setup() {
   setupNavigation(1);// set manual mode 1 , auto 0
   setupPM2_5();
   heartbeat_timer_id=schedule_timer.setInterval(1000, heartbeat); //1Hz
-  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5);   //5Hz
-  UPDATETURN_timer_id=schedule_timer.setInterval(3000, updateturnaround);   
-  TURNAROUND_timer_id=schedule_timer.setInterval(3000, turnaround);         
+  PM2_5_timer_id=schedule_timer.setInterval(5000, updatePM2_5);   //5Hz 
   setupCmdMessenger();
 }
 
@@ -58,7 +54,8 @@ void loop() {
     if(isGpsLocked()){
       isGps_data_fix=false;
       if(updateLocation()){
-        updateNavigation();
+        if(is_turnaround_started==false) updateNavigation();
+        updateturnaround();
       }     
     }
     timerRun();
@@ -74,11 +71,7 @@ void loop() {
     
     reconnectGPS();  
   }   //if(isGpsDataNew)
-  if(turnaround_count==true){
-    schedule_timer.disable(UPDATETURN_timer_id);
-    schedule_timer.disable(TURNAROUND_timer_id);
-  }
-  
+   
   schedule_timer.run();
   timerRun();
   cmdMessengerRun();
