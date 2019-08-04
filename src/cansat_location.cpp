@@ -281,5 +281,5 @@ bool CansatLocation::testVincenty()
 
 float CansatLocation::getGroundAltitude(){
 
-  return((_current_coord.alt-_destination_coord.alt)/10);
+  return((_current_coord.alt-_destination_coord.alt));
 }

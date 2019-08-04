@@ -16,26 +16,26 @@ float height,cansat_height;
 float time_land,estimate_landing_point;
 float distance_delta,th_height,turn_height;
 float turnaround_angle,turnaround_time;
-bool turnaround_permission=true;
-int cnt111=0;
 
 void updateturnaround(){
   distance=cansatLocation.distance;                 
   velocity_air=cansatGPS.ground_speed_ms();
   height=cansatLocation.getGroundAltitude();
-  velocity_fall=averageVelocityFall(height);  //average
+  velocity_fall=averageVelocityFall(height);  //Calculate Average Value
   
   ////////////// test code
-  height=40;
-  distance=180;
-  velocity_air=10;
-  velocity_fall=2;
-  ////////////// test code
+  //height=40;
+  //distance=180;
+  //velocity_air=10;
+  //velocity_fall=2;
   
-  time_land=height/velocity_fall;
+  ////////////// test code  ELP=20,TH_height=30, turning_time=7
+  
+  time_land=height/velocity_fall;                    //Time_to_land Calculate
   estimate_landing_point=time_land*velocity_air;     //ELP Calculate
-  distance_delta=estimate_landing_point-distance;    //200-180  ==> 20
-  
+  distance_delta=estimate_landing_point-distance;    //d_delta Calculate
+  Serial.print("%,8,1,");
+  Serial.println(is_turnaround_started);
   Serial.print("Distance=");
   Serial.println(distance);
   Serial.print("velocity_air=");
@@ -50,14 +50,14 @@ void updateturnaround(){
   Serial.println(distance_delta);
   
   if(distance_delta>TH_DISTANCE_MIN){
-    turn_height=velocity_fall*TIME_FOR_MIN_TURN;
-    th_height=HEIGHT_PARAMETER*turn_height;    //threshold height calculate  30
+    turn_height=velocity_fall*TIME_FOR_MIN_TURN;        //Height for 1 turn Calculate
+    th_height=HEIGHT_PARAMETER*turn_height;             //Minimum Height to Turnaround Calculate
     Serial.print("threshold_height=");
     Serial.println(th_height);
     if(height>th_height){
       distance_delta=constrain(distance_delta,TH_DISTANCE_MIN,TH_DISTANCE_MAX);   
-      turnaround_angle=getTurnaround_Angle(distance_delta);    //turn around angle calcuete
-      turnaround_time=getTurnaround_Time(distance_delta);
+      turnaround_angle=getTurnaround_Angle(distance_delta);    //Turnaround Angle Calculate
+      turnaround_time=getTurnaround_Time(distance_delta);      //Turnaround Time Calculate
       Serial.print("turnaround_angle=");
       Serial.println(turnaround_angle);
       Serial.print("turnaround_time=");
@@ -65,9 +65,9 @@ void updateturnaround(){
       
       if(is_turnaround_started==false){
         if(turnaround_permission==true){
-          cansatNavigation.winchNeutral();
-          cansatNavigation.winchControlTurnAround(turnaround_angle,turnaround_time*1000);  // (angle,ms)
-          schedule_timer.setTimeout(turnaround_time*1000+1000,turnaroundtimeout);
+          cansatNavigation.winchNeutral();      //Move Winch Servo to Neutral
+          cansatNavigation.winchControlTurnAround(turnaround_angle,turnaround_time*1000);  //Move Winch Servo to Turnaround(angle,ms)
+          schedule_timer.setTimeout(turnaround_time*1000+1000,turnaroundtimeout);          //After Turnaround Time change is_turnaround_started to false
           Serial.println("Cansat Turn Around!");
           is_turnaround_started=true;
         }
@@ -82,12 +82,12 @@ void turnaroundtimeout(){
 }
 
 float getTurnaround_Angle(float distance_delta){
-  float Turnaround_angle=map(distance_delta,TH_DISTANCE_MIN,TH_DISTANCE_MAX,ANGLE_FOR_MAX_TURN,ANGLE_FOR_MIN_TURN);  //d_delta , 10, 30, 105 ,55
+  float Turnaround_angle=map(distance_delta,TH_DISTANCE_MIN,TH_DISTANCE_MAX,ANGLE_FOR_MAX_TURN,ANGLE_FOR_MIN_TURN);  //d_delta, 10, 30, 105,55
   return Turnaround_angle;
 }
 
 float getTurnaround_Time(float distance_delta){
-  float Turnaround_time=map(distance_delta,TH_DISTANCE_MIN,TH_DISTANCE_MAX,TIME_FOR_MIN_TURN,TIME_FOR_MAX_TURN);     // 10 30 5 10
+  float Turnaround_time=map(distance_delta,TH_DISTANCE_MIN,TH_DISTANCE_MAX,TIME_FOR_MIN_TURN,TIME_FOR_MAX_TURN);     //d_delta, 10, 30, 5,10
   return Turnaround_time;
 }
 

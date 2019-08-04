@@ -23,7 +23,7 @@ void setDestinationLocation(float lat, float lng, float alt){
 void setCurrentLocation(){
   float lat = cansatGPS.location().lat* 1.0e-7f;
   float lng = cansatGPS.location().lng* 1.0e-7f;
-  float alt = cansatGPS.location().alt/1000.;
+  float alt = cansatGPS.location().alt/100.;
   cansatLocation.updateCurrentCoord(lat,lng,alt);
 }
 bool updateLocation(){

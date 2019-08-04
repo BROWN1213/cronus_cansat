@@ -37,17 +37,18 @@ void setupCmdMessenger(){
 void OnUnknownCommand()
 {
   cmdMessenger.sendCmd(kError,F("Command without attached callback"));
+  Serial.println("%,7,2,1");
 }
 
 
 // Callback function that sets falling
 void OnFalling()
 {
- 
+ Serial.println("%,7,2,0");
 }
 
 void OnHomePosition(){
-
+  Serial.println("%,7,2,0");
   GpsCoordinates dest;
 //  There is some floating error
 //  send:372875280,1270626890,40
@@ -68,7 +69,7 @@ void OnHomePosition(){
 
 void OnFlyMode(){
   // Read led state argument, 
-  
+  Serial.println("%,7,2,0");
   int trigger;
   trigger = cmdMessenger.readInt16Arg();
   if(trigger==0){ //automode
@@ -94,7 +95,7 @@ void OnFlyMode(){
 void OnManualControl(){
   // Read led state argument, 
   float trigger;
-  
+  Serial.println("%,7,2,0");
   if(isAutoMode()){
     cmdMessenger.sendCmd(kAcknowledge,F("Control fail..Set manualmode first!!!")); 
     return;  
@@ -108,9 +109,13 @@ void OnManualControl(){
   
 }
 void OnTurnAround(){
+  Serial.println("%,7,2,0");
   if(cmdMessenger.readInt16Arg()==1){ 
-    if(is_turnaround_started){
-      turnaround_permission=true;      
-    } 
+    turnaround_permission=true;    
+    cmdMessenger.sendCmd(kAcknowledge,"Turning Permission Granted"); 
+  }else{
+    turnaround_permission=false;
+    cmdMessenger.sendCmd(kAcknowledge,"Turning Permission Denied"); 
   }
+  
 }

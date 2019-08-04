@@ -53,7 +53,7 @@ void updateGPS() {
        Serial.print("lon=");
        Serial.println((cansatGPS.location().lng* 1.0e-7f),7);       
        Serial.print("altitude(m)=");
-       Serial.println(cansatGPS.location().alt/1000.); 
+       Serial.println(cansatGPS.location().alt/100.); 
        Serial.print("num_sat=");
        Serial.println(cansatGPS.num_sats()); 
        Serial.print("speed(km/s)=");
@@ -67,7 +67,7 @@ void updateGPS() {
       Serial.print("%,2,6,");  // header,class,num data
       Serial.print((cansatGPS.location().lat* 1.0e-7f),7);Serial.print(',');
       Serial.print((cansatGPS.location().lng* 1.0e-7f),7);Serial.print(',');
-      Serial.print(cansatGPS.location().alt/1000.);Serial.print(',');
+      Serial.print(cansatGPS.location().alt/100.);Serial.print(',');
       Serial.print(cansatGPS.num_sats());Serial.print(',');
       Serial.print(cansatGPS.ground_speed_ms());Serial.print(',');
       Serial.println(cansatGPS.ground_course());
