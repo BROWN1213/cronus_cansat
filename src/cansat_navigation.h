@@ -28,6 +28,7 @@ class CansatNavigation
     bool getNavigationMode();
     void winchControl(float angle);
     void winchControlTurnAround(float angle,float turnaround_time);
+    void winchControlGetWind();
     void winchNeutral();
     float getControlAngle();
     void timerRun();

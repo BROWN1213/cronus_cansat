@@ -22,6 +22,7 @@ int PM2_5_timer_id;
 bool isGps_data_fix=false;  // Means gps data is valid
 bool is_turnaround_started=false;
 bool turnaround_permission=false;
+bool getwind_permission=false;
 void setup() {
   CansatSystemInit();   
   Serial.begin(115200);
@@ -55,15 +56,16 @@ void loop() {
     if(isGpsLocked()){
       isGps_data_fix=false;
       if(updateLocation()){
-        if(is_turnaround_started==false&&turnaround_permission==true) updateNavigation();
+        if(is_turnaround_started==false&&turnaround_permission==false&&getwind_permission==false) updateNavigation();
         updateturnaround();
+        getwind();
       }     
     }
     timerRun();
     schedule_timer.run();
     cmdMessengerRun();
     reconnectAhrs();
-    
+        
     while((millis()-loop_start_time)<TIME_MARGIN ){
       updateAHRS();
       timerRun();
@@ -72,7 +74,6 @@ void loop() {
     
     reconnectGPS();  
   }   //if(isGpsDataNew)
-   
   schedule_timer.run();
   timerRun();
   cmdMessengerRun();

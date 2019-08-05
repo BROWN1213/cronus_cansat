@@ -116,9 +116,25 @@ void CansatNavigation::winchControlTurnAround(float angle,float turnaround_time)
   CANSAT_LOG1(angle);
 }
 
+void CansatNavigation::winchControlGetWind()
+{
+  uint16_t winch_neutal_time;
+  float angle=0;
+  float wind_time=6000;
+  turnWinch( angleToMicrosec(angle-_winch_angle_offset) );
+  if(fabs(angle)>MIN_CALLBACK_ANGLE){
+    winch_neutal_time=WINCH_CALLBACK_TIME(angle)+ wind_time; 
+      //Serial.print("callback time=");
+      //Serial.println(winch_neutal_time);
+      if(_winchTimer.getNumTimers()>0)_winchTimer.deleteTimer(_timerId);
+      _timerId=_winchTimer.setTimeout(winch_neutal_time, _pCallback);
+    }
+  CANSAT_LOG("Turn winch for get wind");
+  CANSAT_LOG1(angle);
+}
+
 void CansatNavigation::winchNeutral(){
   turnWinch( angleToMicrosec(0-_winch_angle_offset) );
-
 }
 float CansatNavigation::getControlAngle()
 {
