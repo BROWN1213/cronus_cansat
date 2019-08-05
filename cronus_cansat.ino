@@ -68,6 +68,7 @@ void loop() {
         
     while((millis()-loop_start_time)<TIME_MARGIN ){
       updateAHRS();
+      freeFallDetection();
       timerRun();
       cmdMessengerRun();
     }
