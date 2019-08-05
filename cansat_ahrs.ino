@@ -62,7 +62,7 @@ float calMotionAcceleration(){
 
 
 #define MA_NBUF 3
-int MotionAccBuf[MA_NBUF]; 
+float MotionAccBuf[MA_NBUF]; 
 int ma_offset=0;
 float averageMotionAcc(float motion_acc){
   float v_sum;
