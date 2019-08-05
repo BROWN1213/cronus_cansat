@@ -45,7 +45,7 @@ void freeFallDetection(){
   if (motionAcceleration<0.3){
      Serial.println(F("Freefall detected"));
      schedule_timer.setTimeout(7000, setAutoMode);
-  }
+  }  
 }
 
 void setAutoMode(){
@@ -56,7 +56,7 @@ float calMotionAcceleration(){
   float ax=cansatIMU.imu_datas[3];
   float ay=cansatIMU.imu_datas[4];
   float az=cansatIMU.imu_datas[5];
-  return pow( (ax*ax+ay*ay+az*az),0.5);
+  return pow((ax*ax+ay*ay+az*az),0.5);
 }     
 
 
@@ -65,7 +65,6 @@ float calMotionAcceleration(){
 int MotionAccBuf[MA_NBUF]; 
 int ma_offset=0;
 float averageMotionAcc(float motion_acc){
-
   float v_sum;
   // buffering V_NBUF data
   MotionAccBuf[ma_offset]=motion_acc;

@@ -45,7 +45,6 @@ void loop() {
   uint32_t loop_start_time;
   
   bool loop_sync;
-  
   updateGPS(); 
   // choose loop_sync depend on gps status
   // if there is no GPS then use gpsAvailable() for loop_sync
