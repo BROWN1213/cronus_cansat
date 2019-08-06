@@ -212,9 +212,16 @@ void cmdcontrolEvent(ControlEvent theEvent)
         //37.387044, 127.122626
         //String latitude=nf(dest_lat,3,7);
         //String longitude=nf(dest_lng,3,7);        
+        
         dest_lat=37.28985;//lat;
         dest_lng=127.0651;//lng;
         dest_alt=68.5;//alt;
+        
+        /*
+        dest_lat=lat;
+        dest_lng=lng;
+        dest_alt=alt;
+        */
         
         String latitude=nf(dest_lat,3,7);
         String longitude=nf(dest_lng,3,7);        
