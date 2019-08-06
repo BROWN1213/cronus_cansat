@@ -1,13 +1,14 @@
 #include "src/cansat_imu.h"
+
 static CansatHwSerial _IMUport(Serial1);
 
 CansatIMU<CansatHwSerial> cansatIMU(_IMUport);
   
+
 void setupAHRS(){
     cansatIMU.begin(115200);
     cansatStatus=-1;
     Serial.println(F("AHRS begin"));
-
 }
 void reconnectAhrs(){
   cansatIMU.begin(115200);
@@ -35,16 +36,68 @@ void updateAHRS(){
       Serial.print(cansatIMU.imu_datas[2]);Serial.print(',');
       Serial.print(cansatIMU.imu_datas[3]);Serial.print(',');
       Serial.print(cansatIMU.imu_datas[4]);Serial.print(',');
-      Serial.println(cansatIMU.imu_datas[5]);
+      Serial.print(cansatIMU.imu_datas[5]);Serial.print(',');
+      Serial.print(calMotionAcceleration());Serial.print(',');
+      Serial.println(averageMotionAcc(calMotionAcceleration()));
+
 #endif
+
   } 
+
 }
 
+void cansatStateM(int status){
+
+  switch(status){
+    case SETUP_COMPLETED :
+       Serial.println(F("Setup Completed"));
+       cansatStatus=READY_FOR_LAUNCH;
+       
+    break;
+    case READY_FOR_LAUNCH :
+       Serial.println(F("Ready For Launch"));
+       cansatStatus=LAUNCH_DETECTED;
+    break;
+    case LAUNCH_DETECTED :
+      cansatStatus=FREEFALL_DETECTED;
+      Serial.println(F("Launch detected"));
+
+    break;
+    case FREEFALL_DETECTED :
+      cansatStatus=PARACHUTE_DEVELPED;
+      Serial.println(F("Freefall detected"));
+
+    break;
+     case PARACHUTE_DEVELPED :
+      cansatStatus=AUTOPILOT_ACTIVATED;
+      Serial.println(F("Parachte developed"));
+
+    break;     
+    case AUTOPILOT_ACTIVATED :
+      //cansatStatus=LANDING;
+      Serial.println(F("Autopilot activated"));
+
+    break;  
+    case TURN_AROUND :
+     //cansatStatus=AUTOPILOT_ACTIVATED;
+      Serial.println(F("Autopilot activated"));
+
+    break;     
+    case LANDING :
+      Serial.println(F("Landing"));
+
+    break;              
+    default:
+    break;
+  }
+  
+
+}
 void freeFallDetection(){
   float motionAcceleration=averageMotionAcc(calMotionAcceleration());
   if (motionAcceleration<0.3){
      Serial.println(F("Freefall detected"));
-     schedule_timer.setTimeout(7000, setAutoMode);
+     //schedule_timer.setTimeout(7000, setAutoMode);
   }  
 }
 
@@ -56,15 +109,14 @@ float calMotionAcceleration(){
   float ax=cansatIMU.imu_datas[3];
   float ay=cansatIMU.imu_datas[4];
   float az=cansatIMU.imu_datas[5];
-  return pow((ax*ax+ay*ay+az*az),0.5);
-}     
-
-
+  return pow( (ax*ax+ay*ay+az*az),0.5);
+}
 
 #define MA_NBUF 3
-float MotionAccBuf[MA_NBUF]; 
+float MotionAccBuf[MA_NBUF]={1,}; 
 int ma_offset=0;
 float averageMotionAcc(float motion_acc){
+
   float v_sum;
   // buffering V_NBUF data
   MotionAccBuf[ma_offset]=motion_acc;

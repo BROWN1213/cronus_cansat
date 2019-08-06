@@ -10,6 +10,7 @@ enum
   kFlyMode, //4
   kManualControl, //5
   kTurnAround, //6
+  kWindCheck //7
 };
 
 void attachCommandCallbacks()
@@ -20,7 +21,8 @@ void attachCommandCallbacks()
   cmdMessenger.attach(kHomePosition, OnHomePosition);
   cmdMessenger.attach(kFlyMode, OnFlyMode); 
   cmdMessenger.attach(kManualControl, OnManualControl);
-  cmdMessenger.attach(kTurnAround,OnTurnAround);  
+  cmdMessenger.attach(kTurnAround,OnTurnAround);
+  cmdMessenger.attach(kWindCheck,OnWindCheck); 
 }
 void cmdMessengerRun(){
   cmdMessenger.feedinSerialData();
@@ -37,18 +39,18 @@ void setupCmdMessenger(){
 void OnUnknownCommand()
 {
   cmdMessenger.sendCmd(kError,F("Command without attached callback"));
-  Serial.println("%,7,2,1");
+  
 }
 
 
 // Callback function that sets falling
 void OnFalling()
 {
- Serial.println("%,7,2,0");
+
 }
 
 void OnHomePosition(){
-  Serial.println("%,7,2,0");
+ 
   GpsCoordinates dest;
 //  There is some floating error
 //  send:372875280,1270626890,40
@@ -69,7 +71,7 @@ void OnHomePosition(){
 
 void OnFlyMode(){
   // Read led state argument, 
-  Serial.println("%,7,2,0");
+
   int trigger;
   trigger = cmdMessenger.readInt16Arg();
   if(trigger==0){ //automode
@@ -95,7 +97,7 @@ void OnFlyMode(){
 void OnManualControl(){
   // Read led state argument, 
   float trigger;
-  Serial.println("%,7,2,0");
+
   if(isAutoMode()){
     cmdMessenger.sendCmd(kAcknowledge,F("Control fail..Set manualmode first!!!")); 
     return;  
@@ -109,7 +111,7 @@ void OnManualControl(){
   
 }
 void OnTurnAround(){
-  Serial.println("%,7,2,0");
+  
   if(cmdMessenger.readInt16Arg()==1){ 
     turnaround_permission=true;    
     cmdMessenger.sendCmd(kAcknowledge,"Turning Permission Granted"); 
@@ -117,5 +119,13 @@ void OnTurnAround(){
     turnaround_permission=false;
     cmdMessenger.sendCmd(kAcknowledge,"Turning Permission Denied"); 
   }
-  
+}
+void OnWindCheck(){
+  if(cmdMessenger.readInt16Arg()==1){
+    getwind_permission=true;
+    cmdMessenger.sendCmd(kAcknowledge,"Getting Wind Permission Granted"); 
+  }else{  
+    getwind_permission=false;
+    cmdMessenger.sendCmd(kAcknowledge,"Getting Wind Permission Denied"); 
+  }
 }

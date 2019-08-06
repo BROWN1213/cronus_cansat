@@ -10,7 +10,6 @@
 #define V_NBUF 5
 int v_buf[V_NBUF]; // 5sec data ,checkBattery() called every 1sec
 int v_offset=0,v_length=0;
-
 void checkBattery(){
   int v_level=0;
   int v_value = analogRead(battery_pin);

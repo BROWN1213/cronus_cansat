@@ -117,7 +117,11 @@ float averageVelocityFall(float current_altitude){
 void getwind(){
   if(getwind_permission==true){
     Serial.println(F("Get Wind!"));
-    cansatNavigation.winchControlGetWind();   //Go straight for 6 seconds to get wind information
+    cansatNavigation.winchControlGetWind();
     getwind_permission=false;
+    Serial.print("%,9,1,1");
+  }else{
+    Serial.print("%,9,1,0");
   }
+  
 }

@@ -3,8 +3,6 @@
 
 CansatNavigation cansatNavigation;
 
-float ground_alt;
-
 void setupNavigation(bool mode){
   int offset_angle=-6;
   cansatNavigation.begin(D0,winchCallback,offset_angle);
@@ -14,7 +12,7 @@ void setupNavigation(bool mode){
 }
 
 void updateNavigation(){
-  ground_alt=cansatLocation.getGroundAltitude();
+  float ground_alt=cansatLocation.getGroundAltitude();
   //update navigation parameters
   if(destination_locked){
     cansatNavigation.updateNavigationParamers(location_distance,location_bearing,cansatGPS.ground_course(),ground_alt);
@@ -22,6 +20,12 @@ void updateNavigation(){
     cansatNavigation.updateControlAngle();
   
     // turn winch
+    /*
+    Serial.print(F("isAuto="));
+    Serial.println(isAutoMode());
+    Serial.print(F("GPS num="));
+    Serial.println(cansatGPS.status());
+    */
     if(isAutoMode()&& (cansatGPS.status()>=2)){ //GPS_FIX_TYPE_2D_FIX
       cansatNavigation.winchControl(0); // ignore angle when auto mode
     }
@@ -42,7 +46,7 @@ void winchCallback(){
 }
 
 void setNavigationMode(bool mode){
-    //mode 0 : auto
+    //mode 0 :audo
     //mode 1 : manual
     cansatNavigation.setNavigationMode(mode);
 

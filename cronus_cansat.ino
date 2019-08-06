@@ -45,6 +45,7 @@ void loop() {
   uint32_t loop_start_time;
   
   bool loop_sync;
+  
   updateGPS(); 
   // choose loop_sync depend on gps status
   // if there is no GPS then use gpsAvailable() for loop_sync
@@ -55,9 +56,10 @@ void loop() {
     if(isGpsLocked()){
       isGps_data_fix=false;
       if(updateLocation()){
-        if(is_turnaround_started==false&&turnaround_permission==false&&getwind_permission==false) updateNavigation();
-        updateturnaround();
-        getwind();
+        //if(is_turnaround_started==false&&turnaround_permission==false&&getwind_permission==false) 
+        updateNavigation();
+        //updateturnaround();
+        //getwind();
       }     
     }
     timerRun();
