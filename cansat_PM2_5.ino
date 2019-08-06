@@ -15,5 +15,5 @@ void updatePM2_5(){
 
     //processing
     Serial.print("%,7,1,");  //header
-    Serial.println((int)cansatPM2_5.dustDensity);
+    Serial.println((float)cansatPM2_5.dustDensity);
 }
